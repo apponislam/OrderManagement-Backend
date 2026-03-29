@@ -1,0 +1,149 @@
+Smart Inventory & Order Management System - API Documentation
+Base URL: /api/v1
+
+================================================================================
+MODULE: Authentication
+================================================================================
+
+1. Signup
+   Method: POST
+   Path: /auth/signup
+   Description: Register a new user (admin or manager)
+   Auth Required: No
+   Request Body:
+   {
+     "name": "John Doe",
+     "email": "john@example.com",
+     "password": "password123",
+     "role": "admin"
+   }
+
+2. Login
+   Method: POST
+   Path: /auth/login
+   Description: User login to get access and refresh tokens
+   Auth Required: No
+   Request Body:
+   {
+     "email": "john@example.com",
+     "password": "password123"
+   }
+
+================================================================================
+MODULE: Category
+================================================================================
+
+1. Create Category
+   Method: POST
+   Path: /category
+   Description: Create a new product category
+   Auth Required: Yes (Roles: admin, manager)
+   Request Body:
+   {
+     "name": "Electronics"
+   }
+
+2. Get All Categories
+   Method: GET
+   Path: /category
+   Description: Fetch all product categories
+   Auth Required: Yes (Roles: admin, manager)
+
+================================================================================
+MODULE: Product
+================================================================================
+
+1. Create Product
+   Method: POST
+   Path: /product
+   Description: Add a new product to inventory
+   Auth Required: Yes (Roles: admin, manager)
+   Request Body:
+   {
+     "name": "iPhone 13",
+     "categoryId": "category_id_here",
+     "price": 999,
+     "stock": 50,
+     "minStockThreshold": 5
+   }
+
+2. Get All Products
+   Method: GET
+   Path: /product
+   Description: Fetch all products with populated categories
+   Auth Required: Yes (Roles: admin, manager)
+
+3. Update Product
+   Method: PATCH
+   Path: /product/:id
+   Description: Update product details or manual restock
+   Auth Required: Yes (Roles: admin, manager)
+   Request Body:
+   {
+     "stock": 60,
+     "price": 950
+   }
+
+================================================================================
+MODULE: Order
+================================================================================
+
+1. Create Order
+   Method: POST
+   Path: /order
+   Description: Place a new order (auto-calculates price and deducts stock)
+   Auth Required: Yes (Roles: admin, manager)
+   Request Body:
+   {
+     "customerName": "Jane Smith",
+     "items": [
+       {
+         "productId": "product_id_here",
+         "quantity": 2
+       }
+     ]
+   }
+
+2. Get All Orders
+   Method: GET
+   Path: /order
+   Description: Fetch all orders (supports query params: ?date=YYYY-MM-DD&status=pending)
+   Auth Required: Yes (Roles: admin, manager)
+
+3. Update Order Status
+   Method: PATCH
+   Path: /order/:id/status
+   Description: Update order fulfillment status
+   Auth Required: Yes (Roles: admin, manager)
+   Request Body:
+   {
+     "status": "shipped"
+   }
+
+4. Cancel Order
+   Method: PATCH
+   Path: /order/:id/cancel
+   Description: Cancel an order and restore product stock
+   Auth Required: Yes (Roles: admin, manager)
+
+================================================================================
+MODULE: Dashboard & Activity
+================================================================================
+
+1. Dashboard Stats
+   Method: GET
+   Path: /dashboard/stats
+   Description: Get real-time system insights (revenue, low stock count, etc.)
+   Auth Required: Yes (Roles: admin, manager)
+
+2. Restock Queue
+   Method: GET
+   Path: /dashboard/restock-queue
+   Description: Get list of items below threshold ordered by priority
+   Auth Required: Yes (Roles: admin, manager)
+
+3. Activity Logs
+   Method: GET
+   Path: /activity
+   Description: Fetch the latest 10 system activity logs
+   Auth Required: Yes (Roles: admin, manager)

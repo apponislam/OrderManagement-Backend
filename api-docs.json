@@ -1,0 +1,163 @@
+{
+  "project": "Smart Inventory & Order Management System",
+  "base_url": "/api/v1",
+  "endpoints": [
+    {
+      "module": "Authentication",
+      "routes": [
+        {
+          "path": "/auth/signup",
+          "method": "POST",
+          "description": "Register a new user (admin or manager)",
+          "request_body": {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "password": "password123",
+            "role": "admin"
+          },
+          "auth_required": false
+        },
+        {
+          "path": "/auth/login",
+          "method": "POST",
+          "description": "User login to get access and refresh tokens",
+          "request_body": {
+            "email": "john@example.com",
+            "password": "password123"
+          },
+          "auth_required": false
+        }
+      ]
+    },
+    {
+      "module": "Category",
+      "routes": [
+        {
+          "path": "/category",
+          "method": "POST",
+          "description": "Create a new product category",
+          "request_body": {
+            "name": "Electronics"
+          },
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/category",
+          "method": "GET",
+          "description": "Fetch all product categories",
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        }
+      ]
+    },
+    {
+      "module": "Product",
+      "routes": [
+        {
+          "path": "/product",
+          "method": "POST",
+          "description": "Add a new product to inventory",
+          "request_body": {
+            "name": "iPhone 13",
+            "categoryId": "category_id_here",
+            "price": 999,
+            "stock": 50,
+            "minStockThreshold": 5
+          },
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/product",
+          "method": "GET",
+          "description": "Fetch all products with populated categories",
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/product/:id",
+          "method": "PATCH",
+          "description": "Update product details or manual restock",
+          "request_body": {
+            "stock": 60,
+            "price": 950
+          },
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        }
+      ]
+    },
+    {
+      "module": "Order",
+      "routes": [
+        {
+          "path": "/order",
+          "method": "POST",
+          "description": "Place a new order (auto-calculates price and deducts stock)",
+          "request_body": {
+            "customerName": "Jane Smith",
+            "items": [
+              {
+                "productId": "product_id_here",
+                "quantity": 2
+              }
+            ]
+          },
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/order",
+          "method": "GET",
+          "description": "Fetch all orders (supports query params: ?date=YYYY-MM-DD&status=pending)",
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/order/:id/status",
+          "method": "PATCH",
+          "description": "Update order fulfillment status",
+          "request_body": {
+            "status": "shipped"
+          },
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/order/:id/cancel",
+          "method": "PATCH",
+          "description": "Cancel an order and restore product stock",
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        }
+      ]
+    },
+    {
+      "module": "Dashboard & Activity",
+      "routes": [
+        {
+          "path": "/dashboard/stats",
+          "method": "GET",
+          "description": "Get real-time system insights (revenue, low stock count, etc.)",
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/dashboard/restock-queue",
+          "method": "GET",
+          "description": "Get list of items below threshold ordered by priority",
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        },
+        {
+          "path": "/activity",
+          "method": "GET",
+          "description": "Fetch the latest 10 system activity logs",
+          "auth_required": true,
+          "roles": ["admin", "manager"]
+        }
+      ]
+    }
+  ]
+}
