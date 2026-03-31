@@ -87,7 +87,7 @@ const updateOrderStatus = async (id: string, status: string) => {
             throw new ApiError(httpStatus.BAD_REQUEST, "Cannot update a cancelled order.");
         }
 
-        const result = await Order.findByIdAndUpdate(id, { status }, { new: true, session });
+        const result = await Order.findByIdAndUpdate(id, { status }, { returnDocument: 'after', session });
 
         // Activity Log: Consistent with other transaction-based methods
         await ActivityLog.create([{ message: `Order #${id} marked as ${status}` }], { session });

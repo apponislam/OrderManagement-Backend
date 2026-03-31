@@ -50,7 +50,7 @@ const updateProduct = async (id: string, payload: Partial<IProduct>) => {
             }
         }
 
-        const result = await Product.findByIdAndUpdate(id, payload, { new: true, session });
+        const result = await Product.findByIdAndUpdate(id, payload, { returnDocument: 'after', session });
 
         // Activity Log
         if (payload.stock !== undefined) {

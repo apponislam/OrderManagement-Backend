@@ -11,4 +11,8 @@ router.post("/", auth, authorize(["admin", "manager"]), validateRequest(Category
 
 router.get("/", auth, authorize(["admin", "manager"]), CategoryControllers.getAllCategories);
 
+router.patch("/:id", auth, authorize(["admin", "manager"]), validateRequest(CategoryValidations.updateCategoryValidationSchema), CategoryControllers.updateCategory);
+
+router.delete("/:id", auth, authorize(["admin", "manager"]), CategoryControllers.deleteCategory);
+
 export const CategoryRoutes = router;
