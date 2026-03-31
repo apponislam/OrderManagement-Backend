@@ -16,19 +16,22 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-    const result = await ProductServices.getAllProducts();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const result = await ProductServices.getAllProducts(page, limit);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "Products fetched successfully",
-        data: result,
+        meta: result.meta,
+        data: result.data,
     });
 });
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = await ProductServices.updateProduct(id, req.body);
+    const result = await ProductServices.updateProduct(id as string, req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

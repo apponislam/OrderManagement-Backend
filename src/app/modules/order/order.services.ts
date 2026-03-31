@@ -87,7 +87,7 @@ const updateOrderStatus = async (id: string, status: string) => {
             throw new ApiError(httpStatus.BAD_REQUEST, "Cannot update a cancelled order.");
         }
 
-        const result = await Order.findByIdAndUpdate(id, { status }, { returnDocument: 'after', session });
+        const result = await Order.findByIdAndUpdate(id, { status }, { returnDocument: "after", session });
 
         // Activity Log: Consistent with other transaction-based methods
         await ActivityLog.create([{ message: `Order #${id} marked as ${status}` }], { session });
@@ -104,7 +104,8 @@ const updateOrderStatus = async (id: string, status: string) => {
 };
 
 const getAllOrders = async (query: any) => {
-    const { date, status } = query;
+    const { date, status, page = 1, limit = 10 } = query;
+    const skip = (Number(page) - 1) * Number(limit);
     const filter: any = {};
 
     if (date) {
@@ -118,8 +119,18 @@ const getAllOrders = async (query: any) => {
         filter.status = status;
     }
 
-    const result = await Order.find(filter).sort({ createdAt: -1 });
-    return result;
+    const result = await Order.find(filter).sort({ createdAt: -1 }).skip(skip).limit(Number(limit));
+    const total = await Order.countDocuments(filter);
+
+    return {
+        data: result,
+        meta: {
+            page: Number(page),
+            limit: Number(limit),
+            total,
+            totalPage: Math.ceil(total / Number(limit)),
+        },
+    };
 };
 
 const cancelOrder = async (id: string) => {

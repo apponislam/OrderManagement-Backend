@@ -26,9 +26,20 @@ const createCategory = async (payload: ICategory) => {
     }
 };
 
-const getAllCategories = async () => {
-    const result = await Category.find();
-    return result;
+const getAllCategories = async (page: number = 1, limit: number = 10) => {
+    const skip = (page - 1) * limit;
+    const result = await Category.find().skip(skip).limit(limit);
+    const total = await Category.countDocuments();
+
+    return {
+        data: result,
+        meta: {
+            page,
+            limit,
+            total,
+            totalPage: Math.ceil(total / limit),
+        },
+    };
 };
 
 const updateCategory = async (id: string, payload: Partial<ICategory>) => {

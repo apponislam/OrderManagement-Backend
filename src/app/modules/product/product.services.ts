@@ -26,9 +26,20 @@ const createProduct = async (payload: IProduct) => {
     }
 };
 
-const getAllProducts = async () => {
-    const result = await Product.find().populate("categoryId");
-    return result;
+const getAllProducts = async (page: number = 1, limit: number = 10) => {
+    const skip = (page - 1) * limit;
+    const result = await Product.find().populate("categoryId").skip(skip).limit(limit);
+    const total = await Product.countDocuments();
+
+    return {
+        data: result,
+        meta: {
+            page,
+            limit,
+            total,
+            totalPage: Math.ceil(total / limit),
+        },
+    };
 };
 
 const updateProduct = async (id: string, payload: Partial<IProduct>) => {
@@ -50,7 +61,7 @@ const updateProduct = async (id: string, payload: Partial<IProduct>) => {
             }
         }
 
-        const result = await Product.findByIdAndUpdate(id, payload, { returnDocument: 'after', session });
+        const result = await Product.findByIdAndUpdate(id, payload, { returnDocument: "after", session });
 
         // Activity Log
         if (payload.stock !== undefined) {
